@@ -4,11 +4,11 @@ export async function getStreamtoken(req,res){
     try {
         const token = chatClient.createToken(req.user.clerkId);
 
-        res.setaus(200).json({
+        res.status(200).json({
             token,
             userId: req.user.clerkId,
             userName: req.user.name,
-            userImage: req.user.image,
+            userImage: req.user.profileImage,
         })
     } catch (error) {
         console.log("Error in getStreamtoken controller", error.message);

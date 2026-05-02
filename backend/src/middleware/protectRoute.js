@@ -9,7 +9,7 @@ export const protectRoute = [
             if(!clerkId) return res.status(404).json({msg: "Unauthorized - invalid token"});
 
             //find user in db by clerk id
-            const user = User.findOne({clerkId});
+            const user = await User.findOne({clerkId});
 
             if(!user) return res.status(404).json({msg: "user not found"});
 
