@@ -26,7 +26,7 @@ export async function createSession(req,res) {
         await streamClient.video.call("default",callId).getOrCreate({
             data: {
                 created_by_id: clerkId,
-                custom: {problem,difficulty,sessionId:_id.toString()},
+                custom: {problem,difficulty,sessionId:session._id.toString()},
             },
         });
 
