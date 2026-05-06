@@ -1,23 +1,24 @@
 import { useState } from 'react'
-import { Show, SignInButton, SignUpButton, UserButton } from '@clerk/react'
+import { Routes,Route, Navigate } from 'react-router'
+import Homepage from './pages/Homepage'
+import ProblemsPage from './pages/ProblemsPage'
+import { useUser } from '@clerk/react'
+import toast, { Toaster } from 'react-hot-toast';
 
 function App() {
   
+  const {isSignedIn}=useUser();
 
   return (
     <>
-      <h1 className='bg-red-500 p-4'>Welcome here</h1>
-      <button className='btn btn-secondary m-16'>click me</button>
-      <header>
-        <Show when="signed-out">
-          <SignInButton />
-          <SignUpButton />
-        </Show>
-        <Show when="signed-in">
-          <UserButton />
-        </Show>
-      </header>
+      <Toaster/>
+      <Routes>
+        <Route path="/" element={<Homepage/>} />
+        <Route path="/problems" element={isSignedIn? <ProblemsPage/> : <Navigate to="/" />} />
+      </Routes>
+      
     </>
+    
   )
 }
 
