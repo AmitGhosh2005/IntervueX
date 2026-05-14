@@ -66,11 +66,7 @@ function ProblemPage() {
   const checkIfTestsPassed = (actualOutput, expectedOutput) => {
     const normalizedActual = normalizeOutput(actualOutput);
     const normalizedExpected = normalizeOutput(expectedOutput);
-    console.log(typeof actualOutput);
-    console.log(typeof expectedOutput);
-
-    console.log(JSON.stringify(actualOutput));
-    console.log(JSON.stringify(expectedOutput));
+    
 
     return normalizedActual == normalizedExpected;
   };
