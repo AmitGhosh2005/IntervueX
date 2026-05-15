@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:3000/api/code/execute";
+const API_URL = "https://intervuex-sou7.onrender.com/api/code/execute";
 
 export default async function executeCode(language, code) {
   try {
