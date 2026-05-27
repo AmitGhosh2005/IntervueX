@@ -34,6 +34,10 @@ app.use("/api/chat", chatRoutes);
 app.use("/api/sessions", sessionRoutes);
 app.use("/api/code", codeExecutionRoutes);
 
+app.get("/", (req, res) => {
+  res.send("Backend is running successfully");
+});
+
 app.get("/health" , (req,res)=>{
     res.status(200).json({msg:"success from backend"})
 })
