@@ -32,14 +32,17 @@ function DashboardPage() {
       },
       {
         onSuccess: async (data) => {
-        console.log("SESSION CREATED:", data);
+        console.log("FULL RESPONSE:", data);
+        console.log("SESSION:", data?.session);
+
+        if (!data?.session?._id) {
+          console.log("INVALID RESPONSE");
+          return;
+        }
 
         setShowCreateModal(false);
 
-        // small delay so queries + stream initialize properly
-        setTimeout(() => {
-          navigate(`/session/${data.session._id}`);
-        }, 500);
+        navigate(`/session/${data.session._id}`);
       },
       }
     );
