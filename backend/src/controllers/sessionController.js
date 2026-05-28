@@ -21,6 +21,9 @@ export async function createSession(req,res) {
             host: userId,
             callId,
         });
+        console.log("USER ID:", userId);
+        console.log("CLERK ID:", clerkId);
+        console.log("PROBLEM:", problem);
 
         //create stream video call
         await streamClient.video.call("default",callId).getOrCreate({
@@ -39,7 +42,10 @@ export async function createSession(req,res) {
         await channel.create();
         res.status(201).json({session});
     } catch (error) {
-        console.log("Error in createSession controller:", error.message);
+        console.log("FULL CREATE SESSION ERROR:");
+        console.log(error);
+        console.log(error.message);
+        console.log(error.stack);
         res.status(500).json({message: "Internal server error"});
     }
     
