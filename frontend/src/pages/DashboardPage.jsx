@@ -31,10 +31,16 @@ function DashboardPage() {
         difficulty: roomConfig.difficulty.toLowerCase(),
       },
       {
-        onSuccess: (data) => {
-          setShowCreateModal(false);
+        onSuccess: async (data) => {
+        console.log("SESSION CREATED:", data);
+
+        setShowCreateModal(false);
+
+        // small delay so queries + stream initialize properly
+        setTimeout(() => {
           navigate(`/session/${data.session._id}`);
-        },
+        }, 500);
+      },
       }
     );
   };
