@@ -5,11 +5,17 @@ export const protectRoute = [
     requireAuth(),
     async(req,res,next)=>{
         try {
+            console.log("PROTECT ROUTE HIT");
+            console.log("AUTH:", req.auth());
+            console.log("USER ID:", req.auth()?.userId);
+
             const clerkId = req.auth().userId;
             if(!clerkId) return res.status(404).json({msg: "Unauthorized - invalid token"});
 
+
             //find user in db by clerk id
             const user = await User.findOne({clerkId});
+            console.log("DB USER:", user);
 
             if(!user) return res.status(404).json({msg: "user not found"});
 

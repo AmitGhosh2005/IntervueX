@@ -27,7 +27,24 @@ app.use(cors({
   ],
   credentials: true,
 }));
+
 app.use(clerkMiddleware());
+
+// DEBUG LOGS
+app.use((req, res, next) => {
+  console.log("========== REQUEST ==========");
+  console.log("PATH:", req.path);
+
+  try {
+    console.log("AUTH:", req.auth()?.userId);
+  } catch (err) {
+    console.log("AUTH ERROR:", err.message);
+  }
+
+  next();
+});
+
+app.use("/api/inngest" , serve({client: inngest, functions}));
 
 app.use("/api/inngest" , serve({client: inngest, functions}));
 app.use("/api/chat", chatRoutes);
