@@ -9,7 +9,11 @@ export const protectRoute = [
             console.log("AUTH:", req.auth());
             console.log("USER ID:", req.auth()?.userId);
 
-            const clerkId = req.auth().userId;
+            console.log(req.auth);
+
+            const clerkId =
+            req.auth?.userId ||
+            req.auth()?.userId;
             if(!clerkId) return res.status(404).json({msg: "Unauthorized - invalid token"});
 
 

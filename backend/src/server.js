@@ -31,6 +31,7 @@ app.use(cors({
 app.use(clerkMiddleware());
 
 // DEBUG LOGS
+
 app.use((req, res, next) => {
   console.log("========== REQUEST ==========");
   console.log("PATH:", req.path);
@@ -50,6 +51,13 @@ app.use("/api/inngest" , serve({client: inngest, functions}));
 app.use("/api/chat", chatRoutes);
 app.use("/api/sessions", sessionRoutes);
 app.use("/api/code", codeExecutionRoutes);
+
+app.get("/api/test-auth", protectRoute, (req, res) => {
+  res.json({
+    success: true,
+    clerkId: req.user.clerkId,
+  });
+});
 
 app.get("/", (req, res) => {
   res.send("Backend is running successfully");
