@@ -1,5 +1,5 @@
 import { useUser } from "@clerk/react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef  } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useEndSession, useJoinSession, useSessionById } from "../hooks/useSessions";
 import { PROBLEMS } from "../data/problems";
@@ -21,6 +21,7 @@ function SessionPage() {
   const { user } = useUser();
   const [output, setOutput] = useState(null);
   const [isRunning, setIsRunning] = useState(false);
+  const joinedRef = useRef(false);
 
   const { data: sessionData, isLoading: loadingSession, refetch } = useSessionById(id);
 
@@ -47,14 +48,32 @@ function SessionPage() {
   const [code, setCode] = useState(problemData?.starterCode?.[selectedLanguage] || "");
 
   // auto-join session if user is not already a participant and not the host
-  useEffect(() => {
-    if (!session || !user || loadingSession) return;
-    if (isHost || isParticipant) return;
+useEffect(() => {
+  if (joinedRef.current) return;
 
-    joinSessionMutation.mutate(id, { onSuccess: refetch });
+  if (!session || !user || loadingSession) return;
 
-    // remove the joinSessionMutation, refetch from dependencies to avoid infinite loop
-  }, [session, user, loadingSession, isHost, isParticipant, id]);
+  if (isHost || isParticipant) return;
+
+  joinedRef.current = true;
+
+  joinSessionMutation.mutate(id, {
+    onSuccess: () => {
+      refetch();
+    },
+    onError: () => {
+      joinedRef.current = false;
+    },
+  });
+}, [
+  session,
+  user,
+  loadingSession,
+  isHost,
+  isParticipant,
+  id,
+  refetch,
+]);
 
   // redirect the "participant" when session ends
   useEffect(() => {
@@ -129,8 +148,10 @@ function SessionPage() {
                             session?.difficulty
                           )}`}
                         >
-                          {session?.difficulty.slice(0, 1).toUpperCase() +
-                            session?.difficulty.slice(1) || "Easy"}
+                          {session?.difficulty
+                            ? session.difficulty.charAt(0).toUpperCase() +
+                              session.difficulty.slice(1)
+                            : "Easy"}
                         </span>
                         {isHost && session?.status === "active" && (
                           <button

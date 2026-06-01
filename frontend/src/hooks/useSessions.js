@@ -68,7 +68,7 @@ export const useSessionById = (id) => {
 
     enabled: !!id,
 
-    refetchInterval: 5000,
+    refetchInterval: false,
   });
 
   return result;
