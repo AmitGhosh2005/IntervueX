@@ -47,7 +47,6 @@ app.use((req, res, next) => {
 
 app.use("/api/inngest" , serve({client: inngest, functions}));
 
-app.use("/api/inngest" , serve({client: inngest, functions}));
 app.use("/api/chat", chatRoutes);
 app.use("/api/sessions", sessionRoutes);
 app.use("/api/code", codeExecutionRoutes);
@@ -67,7 +66,12 @@ app.get("/health" , (req,res)=>{
     res.status(200).json({msg:"success from backend"})
 })
 
-
+app.get("/api/debug-auth", (req, res) => {
+  res.json({
+    authorization: req.headers.authorization || null,
+    headers: req.headers,
+  });
+});
 
 // make our app ready for deployment
 

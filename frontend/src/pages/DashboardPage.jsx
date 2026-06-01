@@ -9,6 +9,7 @@ import StatsCards from "../components/StatsCards";
 import ActiveSessions from "../components/ActiveSessions";
 import RecentSessions from "../components/RecentSessions";
 import CreateSessionModal from "../components/CreateSessionModal";
+import axiosInstance from "../lib/axios";
 
 
 
@@ -56,6 +57,18 @@ function DashboardPage() {
 
     return session.host?.clerkId === user.id || session.participant?.clerkId === user.id;
   };
+  
+
+    const testAuth = async () => {
+      try {
+        const res = await axiosInstance.get("/debug-auth");
+        console.log("DEBUG AUTH:", res.data);
+      } catch (err) {
+        console.log(err);
+      }
+    };
+
+    testAuth();
 
   return (
     <>
