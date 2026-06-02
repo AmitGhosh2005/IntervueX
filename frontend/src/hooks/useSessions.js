@@ -61,17 +61,17 @@ export const useMyRecentSessions = () => {
 };
 
 export const useSessionById = (id) => {
-  const result = useQuery({
+  return useQuery({
     queryKey: ["session", id],
-
     queryFn: () => sessionApi.getSessionById(id),
-
     enabled: !!id,
 
-    refetchInterval: false,
-  });
+    refetchOnWindowFocus: false,
+    refetchOnReconnect: false,
+    refetchOnMount: false,
 
-  return result;
+    staleTime: Infinity,
+  });
 };
 
 export const useJoinSession = () => {

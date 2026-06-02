@@ -14,13 +14,12 @@ const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 const queryClient = new QueryClient();
 
 createRoot(document.getElementById('root')).render(
-  <StrictMode>
+  
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
         <ClerkProvider publishableKey={clerkPubKey}>
           <App />
         </ClerkProvider>
       </QueryClientProvider>
-    </BrowserRouter>
-  </StrictMode>,
+    </BrowserRouter>,
 )

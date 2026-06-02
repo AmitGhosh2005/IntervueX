@@ -30,6 +30,10 @@ function useStreamClient(
     let chatClientInstance = null;
 
     const initCall = async () => {
+          console.log(
+          "STREAM INIT STARTED",
+          session?.callId
+        );
       try {
         // Session not loaded yet
         if (!session?.callId) return;
@@ -155,8 +159,9 @@ function useStreamClient(
       mounted = false;
 
       // Cleanup ONLY when component unmounts
-      console.log(
-        "Cleaning up Stream resources..."
+       console.log(
+        "STREAM CLEANUP TRIGGERED",
+        new Date().toISOString()
       );
 
       (async () => {
