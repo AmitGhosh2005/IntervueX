@@ -1,5 +1,5 @@
 import { useUser } from "@clerk/react";
-import { useEffect, useState, useRef  } from "react";
+import { useEffect, useState,  } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useEndSession, useJoinSession, useSessionById } from "../hooks/useSessions";
 import { PROBLEMS } from "../data/problems";
@@ -21,7 +21,7 @@ function SessionPage() {
   const { user } = useUser();
   const [output, setOutput] = useState(null);
   const [isRunning, setIsRunning] = useState(false);
-  const joinedRef = useRef(false);
+  
 
   const { data: sessionData, isLoading: loadingSession, refetch } = useSessionById(id);
 
@@ -49,30 +49,21 @@ function SessionPage() {
 
   // auto-join session if user is not already a participant and not the host
 useEffect(() => {
-  if (joinedRef.current) return;
-
   if (!session || !user || loadingSession) return;
 
   if (isHost || isParticipant) return;
 
-  joinedRef.current = true;
+  if (joinSessionMutation.isPending) return;
 
   joinSessionMutation.mutate(id, {
     onSuccess: () => {
       refetch();
     },
-    onError: () => {
-      joinedRef.current = false;
-    },
   });
 }, [
-  session,
-  user,
-  loadingSession,
-  isHost,
-  isParticipant,
-  id,
-  refetch,
+  session?.participant,
+  session?.status,
+  user?.id,
 ]);
 
   // redirect the "participant" when session ends

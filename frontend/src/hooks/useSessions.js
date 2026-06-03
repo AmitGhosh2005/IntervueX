@@ -64,17 +64,18 @@ export const useSessionById = (id) => {
   return useQuery({
     queryKey: ["session", id],
     queryFn: () => sessionApi.getSessionById(id),
+
     enabled: !!id,
 
-    refetchOnWindowFocus: false,
-    refetchOnReconnect: false,
-    refetchOnMount: false,
+    staleTime: 0,
 
-    staleTime: Infinity,
     refetchInterval: 5000,
+
+    refetchOnWindowFocus: true,
+
+    refetchOnReconnect: true,
   });
 };
-
 export const useJoinSession = () => {
   const queryClient = useQueryClient();
 

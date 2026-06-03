@@ -155,39 +155,38 @@ function useStreamClient(
       initCall();
     }
 
-    return () => {
-      mounted = false;
+   return () => {
+  mounted = false;
 
-      // Cleanup ONLY when component unmounts
-       console.log(
-        "STREAM CLEANUP TRIGGERED",
-        new Date().toISOString()
+  console.log(
+    "STREAM CLEANUP TRIGGERED",
+    new Date().toISOString()
+  );
+
+  if (!session?.callId) return;
+
+  (async () => {
+    try {
+      if (videoCall) {
+        await videoCall.leave();
+      }
+
+      if (chatClientInstance) {
+        await chatClientInstance.disconnectUser();
+      }
+
+      await disconnectStreamClient();
+    } catch (error) {
+      console.error(
+        "Stream cleanup error:",
+        error
       );
-
-      (async () => {
-        try {
-          if (videoCall) {
-            await videoCall.leave();
-          }
-
-          if (chatClientInstance) {
-            await chatClientInstance.disconnectUser();
-          }
-
-          await disconnectStreamClient();
-        } catch (error) {
-          console.error(
-            "Stream cleanup error:",
-            error
-          );
-        }
-      })();
-    };
+    }
+  })();
+};
   }, [
-    session?.callId, // IMPORTANT
-    isHost,
-    isParticipant,
-  ]);
+  session?.callId,
+]);
 
   return {
     streamClient,
