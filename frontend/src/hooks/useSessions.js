@@ -71,6 +71,7 @@ export const useSessionById = (id) => {
     refetchOnMount: false,
 
     staleTime: Infinity,
+    refetchInterval: 5000,
   });
 };
 
