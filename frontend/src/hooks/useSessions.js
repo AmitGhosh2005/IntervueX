@@ -61,20 +61,14 @@ export const useMyRecentSessions = () => {
 };
 
 export const useSessionById = (id) => {
-  return useQuery({
+  const result = useQuery({
     queryKey: ["session", id],
     queryFn: () => sessionApi.getSessionById(id),
-
     enabled: !!id,
-
-    staleTime: 0,
-
-    refetchInterval: 5000,
-
-    refetchOnWindowFocus: true,
-
-    refetchOnReconnect: true,
+    refetchInterval: 5000, // refetch every 5 seconds to detect session status changes
   });
+
+  return result;
 };
 export const useJoinSession = () => {
   const queryClient = useQueryClient();
