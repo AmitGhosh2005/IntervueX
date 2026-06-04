@@ -24,6 +24,13 @@ function useStreamClient(
   const initializedRef = useRef(false);
 
   useEffect(() => {
+     console.log("STREAM EFFECT EXECUTED");
+    console.log({
+    callId: session?.callId,
+    status: session?.status,
+    host: session?.host?.clerkId,
+    participant: session?.participant?.clerkId,
+  });
     let mounted = true;
 
     let videoCall = null;
