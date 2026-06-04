@@ -73,18 +73,10 @@ useEffect(() => {
 
   // redirect the "participant" when session ends
   useEffect(() => {
-  if (!session || loadingSession) return;
+    if (!session || loadingSession) return;
 
-  console.log("SESSION STATUS:", session.status);
-
-  if (session.status === "completed") {
-    navigate("/dashboard");
-  }
-}, [
-  session?.status,
-  loadingSession,
-  navigate,
-]);
+    if (session.status === "completed") navigate("/dashboard");
+  }, [session, loadingSession, navigate]);
 
   // update code when problem loads or changes
   useEffect(() => {
