@@ -162,38 +162,20 @@ function useStreamClient(
       initCall();
     }
 
-   return () => {
-  mounted = false;
+ return () => {
+      // iife
+      (async () => {
+        try {
+          if (videoCall) await videoCall.leave();
+          if (chatClientInstance) await chatClientInstance.disconnectUser();
+          await disconnectStreamClient();
+        } catch (error) {
+          console.error("Cleanup error:", error);
+        }
+      })();
+    };
+  }, [session, loadingSession, isHost, isParticipant]);
 
-  console.log(
-    "STREAM CLEANUP TRIGGERED",
-    new Date().toISOString()
-  );
-
-  if (!session?.callId) return;
-
-  (async () => {
-    try {
-      if (videoCall) {
-        await videoCall.leave();
-      }
-
-      if (chatClientInstance) {
-        await chatClientInstance.disconnectUser();
-      }
-
-      await disconnectStreamClient();
-    } catch (error) {
-      console.error(
-        "Stream cleanup error:",
-        error
-      );
-    }
-  })();
-};
-  }, [
-  session?.callId,
-]);
 
   return {
     streamClient,
