@@ -1,6 +1,3 @@
-import React from 'react';
-import { Show, SignInButton, SignUpButton, UserButton, useUser } from '@clerk/react';
-import toast from 'react-hot-toast';
 import { Link } from "react-router";
 import {
   ArrowRightIcon,
@@ -11,12 +8,13 @@ import {
   VideoIcon,
   ZapIcon,
 } from "lucide-react";
+import { SignInButton } from "@clerk/react";
 
-
-function Homepage() {
+function HomePage() {
   return (
     <div className="bg-gradient-to-br from-base-100 via-base-200 to-base-300">
-     <nav className="bg-base-100/80 backdrop-blur-md border-b border-primary/20 sticky top-0 z-50 shadow-lg">
+      {/* NAVBAR */}
+      <nav className="bg-base-100/80 backdrop-blur-md border-b border-primary/20 sticky top-0 z-50 shadow-lg">
         <div className="max-w-7xl mx-auto p-4 flex items-center justify-between">
           {/* LOGO */}
           <Link
@@ -29,7 +27,7 @@ function Homepage() {
 
             <div className="flex flex-col">
               <span className="font-black text-xl bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent font-mono tracking-wider">
-                IntervueX
+                Talent IQ
               </span>
               <span className="text-xs text-base-content/60 font-medium -mt-1">Code Together</span>
             </div>
@@ -44,6 +42,8 @@ function Homepage() {
           </SignInButton>
         </div>
       </nav>
+
+      {/* HERO SECTION */}
       <div className="max-w-7xl mx-auto px-4 py-20">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           {/* LEFT CONTENT */}
@@ -122,6 +122,7 @@ function Homepage() {
           />
         </div>
       </div>
+
       {/* FEATURES SECTION */}
       <div className="max-w-7xl mx-auto px-4 py-20">
         <div className="text-center mb-16">
@@ -176,7 +177,6 @@ function Homepage() {
         </div>
       </div>
     </div>
-  )
+  );
 }
-
-export default Homepage
+export default HomePage;

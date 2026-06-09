@@ -1,10 +1,10 @@
-import { useState } from 'react'
+// import { useState } from 'react'
 import { Routes,Route, Navigate } from 'react-router'
 import { useUser } from '@clerk/react'
 import toast, { Toaster } from 'react-hot-toast';
-import { useAuth } from "@clerk/react";
-import { useEffect } from "react";
-import { setAuthToken } from "./lib/axios";
+// import { useAuth } from "@clerk/react";
+// import { useEffect } from "react";
+// import { setAuthToken } from "./lib/axios";
 
 
 import Homepage from './pages/Homepage'
@@ -16,35 +16,7 @@ import SessionPage from './pages/SessionPage';
 function App() {
  
   
-   const { getToken } = useAuth();
-    useEffect(() => {
-  const loadToken = async () => {
-    const token = await getToken();
-
-    console.log("CLERK TOKEN =", token);
-
-    if (token) {
-      setAuthToken(token);
-      console.log("TOKEN SET");
-    } else {
-      console.log("TOKEN IS NULL");
-    }
-  };
-
-  loadToken();
-}, [getToken]);
-
-  useEffect(() => {
-    const loadToken = async () => {
-      const token = await getToken();
-
-      if (token) {
-        setAuthToken(token);
-      }
-    };
-
-    loadToken();
-  }, [getToken]);
+   
   const {isSignedIn,isLoaded}=useUser();
 
   if(!isLoaded) return null;
@@ -55,11 +27,11 @@ function App() {
       <Routes>
         <Route path="/" element={!isSignedIn? <Homepage/>: <Navigate to={"/dashboard"}/>} />
         <Route path="/dashboard" element={isSignedIn? <DashboardPage/>: <Navigate to={"/"}/>} />
-        <Route path="/problems" element={isSignedIn? <ProblemsPage/> : <Navigate to="/" />} />
+        <Route path="/problems" element={isSignedIn? <ProblemsPage/> : <Navigate to={"/"} />} />
         <Route path="/problems/:id" element={isSignedIn ? <ProblemPage /> : <Navigate to={"/"} />} />
         <Route path="/session/:id" element={isSignedIn ? <SessionPage /> : <Navigate to={"/"} />} />
       </Routes>
-      
+      <Toaster toastOptions={{ duration: 3000 }} />
     </>
     
   )

@@ -1,7 +1,7 @@
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router';
-import { useUser} from "@clerk/react";
-import {useCreateSession , useActiveSessions , useMyRecentSessions} from "../hooks/useSessions"
+import { useNavigate } from "react-router";
+import { useUser } from "@clerk/react";
+import { useState } from "react";
+import { useActiveSessions, useCreateSession, useMyRecentSessions } from "../hooks/useSessions";
 
 import Navbar from "../components/Navbar";
 import WelcomeSection from "../components/WelcomeSection";
@@ -9,19 +9,17 @@ import StatsCards from "../components/StatsCards";
 import ActiveSessions from "../components/ActiveSessions";
 import RecentSessions from "../components/RecentSessions";
 import CreateSessionModal from "../components/CreateSessionModal";
-import axiosInstance from "../lib/axios";
-
-
 
 function DashboardPage() {
   const navigate = useNavigate();
   const { user } = useUser();
-  const [showCreateModel, setShowCreateModal] = useState(false);
-  const [roomConfig , setRoomConfig] = useState({problem: "", difficulty: ""});
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [roomConfig, setRoomConfig] = useState({ problem: "", difficulty: "" });
 
   const createSessionMutation = useCreateSession();
-  const {data:activeSessionsData , isLoading:loadingActiveSessions} = useActiveSessions();
-  const {data:recentSessionsData , isLoading:loadingRecentSessions} = useMyRecentSessions();
+
+  const { data: activeSessionsData, isLoading: loadingActiveSessions } = useActiveSessions();
+  const { data: recentSessionsData, isLoading: loadingRecentSessions } = useMyRecentSessions();
 
   const handleCreateRoom = () => {
     if (!roomConfig.problem || !roomConfig.difficulty) return;
@@ -32,19 +30,10 @@ function DashboardPage() {
         difficulty: roomConfig.difficulty.toLowerCase(),
       },
       {
-        onSuccess: async (data) => {
-        console.log("FULL RESPONSE:", data);
-        console.log("SESSION:", data?.session);
-
-        if (!data?.session?._id) {
-          console.log("INVALID RESPONSE");
-          return;
-        }
-
-        setShowCreateModal(false);
-
-        navigate(`/session/${data.session._id}`);
-      },
+        onSuccess: (data) => {
+          setShowCreateModal(false);
+          navigate(`/session/${data.session._id}`);
+        },
       }
     );
   };
@@ -57,18 +46,6 @@ function DashboardPage() {
 
     return session.host?.clerkId === user.id || session.participant?.clerkId === user.id;
   };
-  
-
-    const testAuth = async () => {
-      try {
-        const res = await axiosInstance.get("/debug-auth");
-        console.log("DEBUG AUTH:", res.data);
-      } catch (err) {
-        console.log(err);
-      }
-    };
-
-    testAuth();
 
   return (
     <>
@@ -95,7 +72,7 @@ function DashboardPage() {
       </div>
 
       <CreateSessionModal
-        isOpen={showCreateModel}
+        isOpen={showCreateModal}
         onClose={() => setShowCreateModal(false)}
         roomConfig={roomConfig}
         setRoomConfig={setRoomConfig}
