@@ -1,71 +1,63 @@
 import { chatClient, streamClient } from "../lib/stream.js";
 import Session from "../models/Session.js";
 
-export async function createSession(req,res) {
-    try {
-        const { problem, difficulty} = req.body;
-        const userId = req.user._id;
-        const clerkId = req.user.clerkId;
+export async function createSession(req, res) {
+  try {
+    const { problem, difficulty } = req.body;
+    const userId = req.user._id;
+    const clerkId = req.user.clerkId;
 
-        if(!problem || !difficulty){
-            return res.status(400).json({message: "problem and difficulty are required"});
-        }
-
-        //generate a unique call id for stream video
-        const callId = `session_${Date.now()}_${Math.random().toString(36).substring(7)}`;
-
-        //create session in db
-        const session = await Session.create({
-            problem,
-            difficulty,
-            host: userId,
-            callId,
-        });
-        console.log("USER ID:", userId);
-        console.log("CLERK ID:", clerkId);
-        console.log("PROBLEM:", problem);
-
-        //create stream video call
-        await streamClient.video.call("default",callId).getOrCreate({
-            data: {
-                created_by_id: clerkId,
-                custom: {problem,difficulty,sessionId:session._id.toString()},
-            },
-        });
-
-        //chat messageing
-        const channel = chatClient.channel("messaging",callId, {
-            name: `${problem} Session`,
-            created_by_id: clerkId,
-            members: [clerkId]
-        })
-        await channel.create();
-        res.status(201).json({session});
-    } catch (error) {
-        console.log("FULL CREATE SESSION ERROR:");
-        console.log(error);
-        console.log(error.message);
-        console.log(error.stack);
-        res.status(500).json({message: "Internal server error"});
+    if (!problem || !difficulty) {
+      return res.status(400).json({ message: "Problem and difficulty are required" });
     }
-    
+
+    // generate a unique call id for stream video
+    const callId = `session_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+
+    // create session in db
+    const session = await Session.create({ problem, difficulty, host: userId, callId });
+
+    // create stream video call
+    await streamClient.video.call("default", callId).getOrCreate({
+      data: {
+        created_by_id: clerkId,
+        custom: { problem, difficulty, sessionId: session._id.toString() },
+      },
+    });
+
+    // chat messaging
+    const channel = chatClient.channel("messaging", callId, {
+      name: `${problem} Session`,
+      created_by_id: clerkId,
+      members: [clerkId],
+    });
+
+    await channel.create();
+
+    res.status(201).json({ session });
+  } catch (error) {
+    console.log("Error in createSession controller:", error.message);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
 }
 
-export async function getActiveSession(req,res) {
-    try {
-        const sessions = await Session.find({status: "active"})
-        .populate("host", "name profileImage email, clerkId")
-        .populate("participant", "name profileImage email, clerkId")
-        .sort({createdAt: -1}).limit(20);
-        res.status(200).json({sessions})
-    } catch (error) {
-        console.log("Error in getActiveSession controller:", error.message);
-        res.status(500).json({message: "Internal server error"});
-    }
+export async function getActiveSession(_, res) {
+  try {
+    const sessions = await Session.find({ status: "active" })
+      .populate("host", "name profileImage email clerkId")
+      .populate("participant", "name profileImage email clerkId")
+      .sort({ createdAt: -1 })
+      .limit(20);
+
+    res.status(200).json({ sessions });
+  } catch (error) {
+    console.log("Error in getActiveSession controller:", error.message);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
 }
 
-export async function getMyRecentSession(req,res) {
-    try {
+export async function getMyRecentSession(req, res) {
+  try {
     const userId = req.user._id;
 
     // get sessions where user is either host or participant
@@ -78,14 +70,13 @@ export async function getMyRecentSession(req,res) {
 
     res.status(200).json({ sessions });
   } catch (error) {
-    console.log("Error in getMyRecentSessions controller:", error.message);
+    console.log("Error in getMyRecentSession controller:", error.message);
     res.status(500).json({ message: "Internal Server Error" });
   }
-
 }
 
-export async function getSessionById(req,res) {
-    try {
+export async function getSessionById(req, res) {
+  try {
     const { id } = req.params;
 
     const session = await Session.findById(id)
@@ -99,11 +90,10 @@ export async function getSessionById(req,res) {
     console.log("Error in getSessionById controller:", error.message);
     res.status(500).json({ message: "Internal Server Error" });
   }
-
 }
 
-export async function joinSession(req,res) {
-    try {
+export async function joinSession(req, res) {
+  try {
     const { id } = req.params;
     const userId = req.user._id;
     const clerkId = req.user.clerkId;
@@ -141,31 +131,22 @@ export async function endSession(req, res) {
     const { id } = req.params;
     const userId = req.user._id;
 
-    console.log("ENDING SESSION:", id);
-
     const session = await Session.findById(id);
 
-    if (!session) {
-      return res.status(404).json({
-        message: "Session not found",
-      });
-    }
+    if (!session) return res.status(404).json({ message: "Session not found" });
 
-    // only host can end session
+    // check if user is the host
     if (session.host.toString() !== userId.toString()) {
-      return res.status(403).json({
-        message: "Only host can end session",
-      });
+      return res.status(403).json({ message: "Only the host can end the session" });
     }
 
-    // already completed
+    // check if session is already completed
     if (session.status === "completed") {
-      return res.status(400).json({
-        message: "Session already completed",
-      });
+      return res.status(400).json({ message: "Session is already completed" });
     }
 
-    // delete video call safely
+    // delete stream video call
+    console.log("Deleting video call:", session.callId);
     try {
       const call = streamClient.video.call(
         "default",
@@ -174,12 +155,10 @@ export async function endSession(req, res) {
 
       await call.delete({ hard: true });
 
-      console.log("Call deleted");
     } catch (err) {
-      console.log("Call delete failed:", err.message);
+      console.log("Video delete failed:", err.message);
     }
 
-    // delete chat channel safely
     try {
       const channel = chatClient.channel(
         "messaging",
@@ -188,29 +167,22 @@ export async function endSession(req, res) {
 
       await channel.delete();
 
-      console.log("Channel deleted");
     } catch (err) {
       console.log("Channel delete failed:", err.message);
     }
 
     session.status = "completed";
-
     await session.save();
 
-    res.status(200).json({
-      message: "Session ended successfully",
-      session,
-    });
-
+    res.status(200).json({ session, message: "Session ended successfully" });
   } catch (error) {
-    console.log(
-      "Error in endSession controller:",
-      error
-    );
+      console.error("========== END SESSION ERROR ==========");
+      console.error(error);
+      console.error(error.message);
+      console.error(error.stack);
 
-    res.status(500).json({
-      message: "Internal Server Error",
-      error: error.message,
-    });
-  }
+      return res.status(500).json({
+        message: error.message,
+      });
+}
 }

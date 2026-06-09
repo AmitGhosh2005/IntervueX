@@ -29,10 +29,6 @@ function SessionPage() {
   const endSessionMutation = useEndSession();
 
   const session = sessionData?.session;
-  useEffect(() => {
-  console.log("SESSION CHANGED");
-  console.log(session);
-}, [session]);
 
   const isHost = session?.host?.clerkId === user?.id;
   const isParticipant = session?.participant?.clerkId === user?.id;
@@ -53,23 +49,14 @@ function SessionPage() {
   const [code, setCode] = useState(problemData?.starterCode?.[selectedLanguage] || "");
 
   // auto-join session if user is not already a participant and not the host
-useEffect(() => {
-  if (!session || !user || loadingSession) return;
+  useEffect(() => {
+    if (!session || !user || loadingSession) return;
+    if (isHost || isParticipant) return;
 
-  if (isHost || isParticipant) return;
+    joinSessionMutation.mutate(id, { onSuccess: refetch });
 
-  if (joinSessionMutation.isPending) return;
-
-  joinSessionMutation.mutate(id, {
-    onSuccess: () => {
-      refetch();
-    },
-  });
-}, [
-  session?.participant,
-  session?.status,
-  user?.id,
-]);
+    // remove the joinSessionMutation, refetch from dependencies to avoid infinite loop
+  }, [session, user, loadingSession, isHost, isParticipant, id]);
 
   // redirect the "participant" when session ends
   useEffect(() => {
@@ -144,10 +131,8 @@ useEffect(() => {
                             session?.difficulty
                           )}`}
                         >
-                          {session?.difficulty
-                            ? session.difficulty.charAt(0).toUpperCase() +
-                              session.difficulty.slice(1)
-                            : "Easy"}
+                          {session?.difficulty.slice(0, 1).toUpperCase() +
+                            session?.difficulty.slice(1) || "Easy"}
                         </span>
                         {isHost && session?.status === "active" && (
                           <button

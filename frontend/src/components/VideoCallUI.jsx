@@ -84,9 +84,12 @@ function VideoCallUI({ chatClient, channel }) {
               </div>
               <div className="flex-1 overflow-hidden stream-chat-dark">
                 <Chat client={chatClient} theme="str-chat__theme-dark">
-                  <Channel channel={channel}>
+                  <Channel
+                      channel={channel}
+                      key={channel?.id}
+                    >
                     <Window>
-                      <MessageList />
+                      <MessageList  />
                       <MessageInput />
                     </Window>
                     <Thread />
