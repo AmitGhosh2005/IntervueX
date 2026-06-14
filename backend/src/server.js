@@ -86,6 +86,22 @@ app.get("/api/debug-auth", (req, res) => {
   });
 });
 
+app.get("/api/clerk-test", (req, res) => {
+  try {
+    const auth = req.auth?.();
+
+    res.json({
+      auth,
+      secretExists: !!process.env.CLERK_SECRET_KEY,
+    });
+  } catch (err) {
+    res.json({
+      error: err.message,
+      secretExists: !!process.env.CLERK_SECRET_KEY,
+    });
+  }
+});
+
 
 
 const startServer = async()=>{
