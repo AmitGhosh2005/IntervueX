@@ -18,6 +18,8 @@ const __dirname = path.resolve();
 
 const PORT = ENV.PORT || 3000;
 
+console.log("CLIENT_URL =", ENV.CLIENT_URL);
+
 //middlewares
 app.use(express.json());
 app.use(cors({
@@ -74,7 +76,15 @@ app.get("/api/debug-auth", (req, res) => {
 });
 
 // make our app ready for deployment
-
+app.get("/api/debug-auth", (req, res) => {
+  res.json({
+    auth: req.auth ? req.auth() : null,
+    headers: {
+      authorization: req.headers.authorization,
+      cookie: req.headers.cookie,
+    },
+  });
+});
 
 
 
