@@ -102,6 +102,12 @@ app.get("/api/clerk-test", (req, res) => {
   }
 });
 
+app.get("/api/debug-session", (req, res) => {
+  res.json({
+    cookie: req.headers.cookie || null,
+  });
+});
+
 
 
 const startServer = async()=>{
