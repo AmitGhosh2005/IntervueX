@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 import { ClerkProvider } from '@clerk/react'
+import ClerkApiProvider from './components/ClerkApiProvider.jsx'
 import { BrowserRouter } from 'react-router';
 import {
   QueryClient,
@@ -21,7 +22,9 @@ createRoot(document.getElementById('root')).render(
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
         <ClerkProvider publishableKey={clerkPubKey}>
-          <App />
+          <ClerkApiProvider>
+            <App />
+          </ClerkApiProvider>
         </ClerkProvider>
       </QueryClientProvider>
     </BrowserRouter>,

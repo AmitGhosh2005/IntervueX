@@ -32,21 +32,6 @@ app.use(cors({
 
 app.use(clerkMiddleware());
 
-// DEBUG LOGS
-
-app.use((req, res, next) => {
-  console.log("========== REQUEST ==========");
-  console.log("PATH:", req.path);
-
-  try {
-    console.log("AUTH:", req.auth()?.userId);
-  } catch (err) {
-    console.log("AUTH ERROR:", err.message);
-  }
-
-  next();
-});
-
 app.use("/api/inngest" , serve({client: inngest, functions}));
 
 app.use("/api/chat", chatRoutes);
@@ -68,43 +53,9 @@ app.get("/health" , (req,res)=>{
     res.status(200).json({msg:"success from backend"})
 })
 
-app.get("/api/debug-auth", (req, res) => {
-  res.json({
-    authorization: req.headers.authorization || null,
-    headers: req.headers,
-  });
-});
-
-// make our app ready for deployment
-app.get("/api/debug-auth", (req, res) => {
-  res.json({
-    auth: req.auth ? req.auth() : null,
-    headers: {
-      authorization: req.headers.authorization,
-      cookie: req.headers.cookie,
-    },
-  });
-});
-
 app.get("/api/clerk-test", (req, res) => {
-  try {
-    const auth = req.auth?.();
-
-    res.json({
-      auth,
-      secretExists: !!process.env.CLERK_SECRET_KEY,
-    });
-  } catch (err) {
-    res.json({
-      error: err.message,
-      secretExists: !!process.env.CLERK_SECRET_KEY,
-    });
-  }
-});
-
-app.get("/api/debug-session", (req, res) => {
   res.json({
-    cookie: req.headers.cookie || null,
+    auth: req.auth(),
   });
 });
 
